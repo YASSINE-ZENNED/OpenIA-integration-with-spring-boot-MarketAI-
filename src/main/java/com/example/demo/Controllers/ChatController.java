@@ -1,6 +1,9 @@
 package com.example.demo.Controllers;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.util.MimeTypeUtils;
 
 import groovy.util.logging.Slf4j;
@@ -19,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -28,16 +30,11 @@ import java.util.Map;
 @RestController
 public class ChatController {
 
-
-
     @Autowired
     private OpenAiImageModel openAiImageModel;
 
-
     private final ChatModel chatModel;
     private final ChatClient chatClient;
-
-
 
     public ChatController( ChatModel chatModel , ChatClient.Builder chatClient) {
         this.chatModel = chatModel;
@@ -52,7 +49,6 @@ public class ChatController {
 
     @GetMapping("/Image")
     public String Gimage(@RequestParam(value = "prompt", defaultValue = "image of a man thinking oop i forgot to tell the AI what i want") String prompt) {
-
         ImageResponse response = openAiImageModel.call(
                 new ImagePrompt(prompt,
                         OpenAiImageOptions.builder()
@@ -62,20 +58,43 @@ public class ChatController {
                                 .withWidth(1024).build())
 
         );
-
         return response.toString();
     }
 
-    @GetMapping("/image-describe")
-    public String describeImage(@RequestParam("image") MultipartFile imageFile) throws IOException {
+    @GetMapping("/DescribeForClient")
+    public String describeImageC(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
+
 
         byte[] fileContent = imageFile.getBytes();
 
-        UserMessage userMessage = new UserMessage("Can you please explain what you see in the following image?",
+        SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company?" +
+                "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features ."
+        );
+
+        UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
+
         var response = chatClient
-                .call(new Prompt(userMessage));
+                .call(new Prompt(List.of(systemMessage, userMessage)));
         return response.getResult().getOutput().getContent();
+
+    }
+
+    @GetMapping("/DescribeForEnterprise")
+    public String describeImageE(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
+
+
+        byte[] fileContent = imageFile.getBytes();
+
+        SystemMessage systemMessage = new SystemMessage("Your primary function is to generate detailed and accurate descriptions of the main items in images provided by users for marketplace listings .");
+
+        UserMessage userMessage = new UserMessage("give me  description of this image while using these words { " + keywords + " } and key features ",
+                List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
+
+        var response = chatClient
+                .call(new Prompt(List.of(systemMessage, userMessage)));
+        return response.getResult().getOutput().getContent();
+
     }
 
 
