@@ -18,6 +18,7 @@ import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,6 +64,24 @@ public class ChatController {
 
     @GetMapping("/DescribeForClient")
     public String describeImageC(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
+
+
+        byte[] fileContent = imageFile.getBytes();
+
+        SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company?" +
+                "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features ."
+        );
+
+        UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
+                List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
+
+        var response = chatClient
+                .call(new Prompt(List.of(systemMessage, userMessage)));
+        return response.getResult().getOutput().getContent();
+
+    }
+    @PostMapping("/DescribeForClient")
+    public String describeImageCP(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
 
 
         byte[] fileContent = imageFile.getBytes();
