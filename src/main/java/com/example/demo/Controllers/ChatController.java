@@ -1,9 +1,13 @@
 package com.example.demo.Controllers;
 
+import com.example.demo.Models.Item;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.SystemPromptTemplate;
+import org.springframework.ai.parser.BeanOutputParser;
+import org.springframework.ai.parser.ListOutputParser;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.util.MimeTypeUtils;
 
 import groovy.util.logging.Slf4j;
@@ -80,40 +84,42 @@ public class ChatController {
         return response.getResult().getOutput().getContent();
 
     }
-    @PostMapping("/DescribeForClient")
-    public String describeImageCP(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
 
+
+    @PostMapping("/DescribeForClient")
+    public Item describeImageCP(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
 
         byte[] fileContent = imageFile.getBytes();
 
+        var listOutputParser = new BeanOutputParser<>(Item.class);
+
         SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company?" +
-                "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features ."
+                "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features if you cant tell the item tell to upload better photos of the product or if the item is not ok to sell just say sorry cant help you with this item dont use any name brand  for thr discription use 100 words."
+                    +"here is the format i want you to use :" + listOutputParser.getFormat()
         );
 
         UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
 
-        var response = chatClient
-                .call(new Prompt(List.of(systemMessage, userMessage)));
-        return response.getResult().getOutput().getContent();
+        var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+
+        return listOutputParser.parse(response.getResult().getOutput().getContent());
 
     }
 
+
     @GetMapping("/DescribeForEnterprise")
-    public String describeImageE(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
-
-
+    public Item describeImageE(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
         byte[] fileContent = imageFile.getBytes();
-
-        SystemMessage systemMessage = new SystemMessage("Your primary function is to generate detailed and accurate descriptions of the main items in images provided by users for marketplace listings .");
+        var listOutputParser = new BeanOutputParser<>(Item.class);
+        SystemMessage systemMessage = new SystemMessage("Your primary function is to generate detailed and accurate descriptions of the main items in images provided by users for marketplace listings ."+"here is the format i want you to use :" + listOutputParser.getFormat());
 
         UserMessage userMessage = new UserMessage("give me  description of this image while using these words { " + keywords + " } and key features ",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
 
         var response = chatClient
                 .call(new Prompt(List.of(systemMessage, userMessage)));
-        return response.getResult().getOutput().getContent();
-
+        return listOutputParser.parse(response.getResult().getOutput().getContent());
     }
 
 
