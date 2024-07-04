@@ -18,7 +18,6 @@ public class AWSConfig {
     String accessKey = dotenv.get("AWS_ACCESS_KEY");
     String region = dotenv.get("AWS_REGION");
 
-
     @Bean
     public AmazonS3 amazonS3() {
 
