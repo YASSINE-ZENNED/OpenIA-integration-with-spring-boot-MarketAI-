@@ -97,7 +97,7 @@ public class ChatController {
     }
 
     @PostMapping("/SupportChatWithImage")
-    public String SupportChatWithImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
+    public String SupportChatWithImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("prompt")  String keywords ) throws IOException {
 
         byte[] fileContent = imageFile.getBytes();
         return openAiService.SupportChatWithImage(keywords, fileContent);
