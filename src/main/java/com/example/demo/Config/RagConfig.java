@@ -41,9 +41,13 @@ public class RagConfig {
             } else {
                 log.info("Market AI file not found, creating new one");
                 TextReader textReader = new TextReader(marketAI);
+
                 textReader.getCustomMetadata().put("filename", "MarketAi.txt");
+
                 List<Document> documents = textReader.get();
+
                 TokenTextSplitter splitter = new TokenTextSplitter();
+
                 List<Document> splitDocs = splitter.apply(documents);
 
                 simpleVectorStore.add(splitDocs);

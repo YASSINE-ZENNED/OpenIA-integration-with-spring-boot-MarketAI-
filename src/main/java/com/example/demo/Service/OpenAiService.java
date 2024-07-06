@@ -48,6 +48,22 @@ public class OpenAiService {
 
     }
 
+    public String SupportChatWithImage (String prompt,byte[] fileContent) {
+
+        SystemMessage systemMessage = new SystemMessage("I'm a customer service agent for a company that sells products online. I need to provide support to customers who have questions about products they're interested in. I need to be able to answer questions about the product's features, price, and availability. I also need to be able to provide information about the company's return policy and shipping options. " +
+                "if you dont know the answer to the question just say sorry i dont have that information and if the question is not related to the product just say sorry i cant help you with that question. " +
+                "and give them this email to contact us :  Example@gmail.com  and pohne number : 1234567890"
+
+        );
+
+        UserMessage userMessage = new UserMessage(prompt,
+                List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
+
+        var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+
+        return response.getResult().getOutput().getContent();
+    }
+
     public Item describeImageAsUser(String keywords, byte[] fileContent) {
         var listOutputParser = new BeanOutputParser<>(Item.class);
 

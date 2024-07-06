@@ -70,16 +70,23 @@ public class ChatController {
 
     @GetMapping("/Assistantchat")
     public String assistantchat(@RequestParam(value = "prompt", defaultValue = "tell me about this app and why should i use it ") String prompt) {
+
         List<Document>  similarDocs = vectorStore.similaritySearch(SearchRequest.query(prompt).withTopK(1));
+
         List<String> contentList = similarDocs.stream().map(Document::getContent).toList();
+
         PromptTemplate promptTemplate = new PromptTemplate(ragPromtTemplate);
+
         Map<String,Object> promptParams =new HashMap<>();
+
         promptParams.put("input", prompt);
+
         promptParams.put("documents", String.join("\n", contentList));
+
         Prompt Ragedprompt = promptTemplate.create(promptParams);
 
-
         return chatClient.call(Ragedprompt).getResult().getOutput().getContent();
+
     }
 
     @GetMapping("/Image")
@@ -89,7 +96,13 @@ public class ChatController {
 
     }
 
+    @PostMapping("/SupportChatWithImage")
+    public String SupportChatWithImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
 
+        byte[] fileContent = imageFile.getBytes();
+        return openAiService.SupportChatWithImage(keywords, fileContent);
+
+    }
 
     @PostMapping("/DescribeForClient")
     public Item describeImageCP(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords")  String keywords ) throws IOException {
