@@ -3,6 +3,8 @@ package com.example.demo.Controllers;
 import com.example.demo.Models.Item;
 import com.example.demo.Service.OpenAiService;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -59,7 +61,7 @@ public class ChatController {
     public ChatController(VectorStore vectorStore, ChatModel chatModel , ChatClient.Builder chatClient) {
         this.vectorStore = vectorStore;
         this.chatModel = chatModel;
-        this.chatClient = chatClient.build();
+        this.chatClient = chatClient.defaultAdvisors( new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
 
     }
 

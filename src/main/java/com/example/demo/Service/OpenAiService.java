@@ -3,6 +3,8 @@ package com.example.demo.Service;
 
 import com.example.demo.Models.Item;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.InMemoryChatMemory;
 import org.springframework.ai.chat.messages.Media;
 import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
@@ -29,7 +31,7 @@ public class OpenAiService {
 
     public OpenAiService( ChatModel chatModel , ChatClient.Builder chatClient) {
         this.chatModel = chatModel;
-        this.chatClient = chatClient.build();
+        this.chatClient = chatClient.defaultAdvisors( new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
 
     }
 
@@ -62,6 +64,7 @@ public class OpenAiService {
         var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
 
         return response.getResult().getOutput().getContent();
+
     }
 
     public Item describeImageAsUser(String keywords, byte[] fileContent) {
