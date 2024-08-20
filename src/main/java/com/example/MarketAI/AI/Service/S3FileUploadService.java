@@ -1,4 +1,4 @@
-package com.example.demo.Service;
+package com.example.MarketAI.AI.Service;
 
 
 import com.amazonaws.services.s3.AmazonS3;

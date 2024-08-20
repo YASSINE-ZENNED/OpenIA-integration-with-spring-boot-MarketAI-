@@ -1,4 +1,4 @@
-package com.example.demo.Config;
+package com.example.MarketAI.AI.Config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

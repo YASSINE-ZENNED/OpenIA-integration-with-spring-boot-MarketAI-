@@ -1,4 +1,4 @@
-package com.example.demo.Config;
+package com.example.MarketAI.AI.Config;
 
 
 import org.springframework.beans.factory.annotation.Value;

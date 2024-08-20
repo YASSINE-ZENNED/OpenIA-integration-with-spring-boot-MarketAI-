@@ -1,7 +1,7 @@
-package com.example.demo.Service;
+package com.example.MarketAI.AI.Service;
 
 
-import com.example.demo.Models.Item;
+import com.example.MarketAI.AI.Models.Item;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
@@ -58,13 +58,25 @@ public class OpenAiService {
 
         );
 
-        UserMessage userMessage = new UserMessage(prompt,
-                List.of(new Media(MimeTypeUtils.IMAGE_JPEG,fileContent)));
 
-        var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+        if(fileContent == null) {
 
-        return response.getResult().getOutput().getContent();
+            UserMessage userMessage = new UserMessage(prompt);
+            var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
 
+            return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
+
+//            return response.getResult().getOutput().getContent();
+        }else {
+
+            UserMessage userMessage = new UserMessage(prompt,
+                    List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
+
+
+            return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
+
+//            return response.getResult().getOutput().getContent();
+        }
     }
 
     public Item describeImageAsUser(String keywords, byte[] fileContent) {

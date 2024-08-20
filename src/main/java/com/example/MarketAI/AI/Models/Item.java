@@ -1,4 +1,4 @@
-package com.example.demo.Models;
+package com.example.MarketAI.AI.Models;
 
 import java.util.List;
 

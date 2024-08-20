@@ -1,4 +1,4 @@
-package com.example.demo.Config;
+package com.example.MarketAI.AI.Config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

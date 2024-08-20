@@ -1,42 +1,26 @@
-package com.example.demo.Controllers;
+package com.example.MarketAI.AI.Controllers;
 
-import com.example.demo.Models.Item;
-import com.example.demo.Service.OpenAiService;
+import com.example.MarketAI.AI.Models.Item;
+import com.example.MarketAI.AI.Service.OpenAiService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
 import org.springframework.ai.chat.memory.InMemoryChatMemory;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.parser.BeanOutputParser;
-import org.springframework.ai.parser.ListOutputParser;
 import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.Resource;
-import org.springframework.util.MimeTypeUtils;
-
 import groovy.util.logging.Slf4j;
-import org.springframework.ai.chat.messages.Media;
-import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.ai.image.ImagePrompt;
-import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.openai.OpenAiImageModel;
-import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +43,7 @@ public class ChatController {
     private Resource ragPromtTemplate;
 
     public ChatController(VectorStore vectorStore, ChatModel chatModel , ChatClient.Builder chatClient) {
+
         this.vectorStore = vectorStore;
         this.chatModel = chatModel;
         this.chatClient = chatClient.defaultAdvisors( new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
@@ -66,8 +51,12 @@ public class ChatController {
     }
 
     @GetMapping("/chat")
-    public Map<String, String> chat(@RequestParam(value = "prompt", defaultValue = "tell me a joke ") String prompt) {
-        return Map.of("generation", chatModel.call(prompt));
+    public String chat(@RequestParam(value = "prompt", defaultValue = "tell me a joke ") String prompt) {
+
+        String response = chatClient.prompt().user(prompt).call().content();
+
+        return response ;
+
     }
 
     @GetMapping("/Assistantchat")
@@ -86,8 +75,7 @@ public class ChatController {
         promptParams.put("documents", String.join("\n", contentList));
 
         Prompt Ragedprompt = promptTemplate.create(promptParams);
-
-        return chatClient.call(Ragedprompt).getResult().getOutput().getContent();
+      return chatClient.call(Ragedprompt).getResult().getOutput().getContent();
 
     }
 
@@ -99,9 +87,14 @@ public class ChatController {
     }
 
     @PostMapping("/SupportChatWithImage")
-    public String SupportChatWithImage(@RequestParam("image") MultipartFile imageFile, @RequestParam("prompt")  String keywords ) throws IOException {
+    public String SupportChatWithImage(@RequestParam(value = "image" , required = false) MultipartFile imageFile, @RequestParam("prompt")  String keywords ) throws IOException {
 
-        byte[] fileContent = imageFile.getBytes();
+        byte[] fileContent = null;
+
+        if (imageFile != null) {
+            fileContent = imageFile.getBytes();
+        }
+
         return openAiService.SupportChatWithImage(keywords, fileContent);
 
     }
