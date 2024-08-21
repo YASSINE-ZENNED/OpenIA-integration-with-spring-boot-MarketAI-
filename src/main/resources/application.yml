@@ -9,7 +9,7 @@ spring:
           model: gpt-4o
   datasource:
     password: root
-    url: jdbc:postgresql://localhost:5432/MarketAI
+    url: jdbc:postgresql://localhost:5432/MarketAIChat
     username: root
   jpa:
     hibernate:
