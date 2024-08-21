@@ -1,9 +1,12 @@
 package com.example.MarketAI.AI.Service;
 
+import com.example.MarketAI.AI.Models.MessageDTO;
+
 import java.util.List;
 
 public interface ConversationalContextService {
-    List<String> getConversationalContextsIds();
-    String  prepareConversationalContext(final String contextId, String message);
+    List<Long> getConversationalContextsIds();
+
+    String preparePromptConversationalContext(MessageDTO messageDTO);
 
 }

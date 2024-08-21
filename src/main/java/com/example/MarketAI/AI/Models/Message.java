@@ -10,12 +10,13 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
 @Builder
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class Message {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -29,9 +30,11 @@ public class Message {
 
     private Long timestamp;
 
+
     @ManyToOne
     @JoinColumn(name = "conversationId", nullable = false)
     @JsonBackReference
     private Conversation conversation;
+
 
 }
