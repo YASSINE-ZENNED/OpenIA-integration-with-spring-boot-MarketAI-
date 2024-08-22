@@ -23,10 +23,8 @@ public class MessageService {
     public void saveMessage(Message message) {
 
 
-        message.setTimestamp(System.currentTimeMillis());
-
-
         messageRepository.save(message);
+
     }
 
 }
