@@ -7,6 +7,7 @@ import com.example.MarketAI.AI.Models.MessageDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
     @Override
     public String preparePromptConversationalContext(MessageDTO messageDTO) {
-        System.out.println("messageDTO = " + messageDTO);
+
 
         if (messageDTO.getConversationID() == null) {
             System.out.println("messageDTO = " + messageDTO);
@@ -43,13 +44,21 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
         }
 
         if (conversationRepository.findById(messageDTO.getConversationID()).isEmpty()) {
+            System.out.println("_________________________");
+            System.out.println("we good inside");
+            System.out.println("_________________________");
 
             Conversation conversation = new Conversation();
 
             conversation.setId((messageDTO.getConversationID()));
-//            conversation.setDateOfLastMessage(LocalDate.ofEpochDay(System.currentTimeMillis()));
 
-            conversationRepository.save(conversation);
+            LocalDate currentDate = LocalDate.now();
+
+
+            conversation.setDateOfLastMessage(currentDate);
+
+            conversationRepository.saveAndFlush(conversation);
+
 
             Message message1 = new Message();
             message1.setConversation(conversation);
@@ -59,13 +68,13 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             message1.setPhotos(messageDTO.getPhotos());
             message1.setSender(USER);
 
-//            conversation.setDateOfLastMessage(LocalDate.ofEpochDay(System.currentTimeMillis()));
             messageService.saveMessage(message1);
             return "Start a new conversation";
 
         } else {
             Conversation conversation = conversationRepository.findById(messageDTO.getConversationID()).orElseThrow(() -> new RuntimeException("conversation not found"));
             ;
+
 
             Message message1 = new Message();
             message1.setConversation(conversation);

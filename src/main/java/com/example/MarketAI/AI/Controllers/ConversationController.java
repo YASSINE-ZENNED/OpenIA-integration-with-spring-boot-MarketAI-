@@ -31,7 +31,10 @@ public class ConversationController {
 
     @PostMapping("/preparePrompt")
     public String preparePromptConversationalContext(@RequestBody MessageDTO messageDTO) {
+
+
         return conversationalContextService.preparePromptConversationalContext(messageDTO);
+
     }
 
 }
