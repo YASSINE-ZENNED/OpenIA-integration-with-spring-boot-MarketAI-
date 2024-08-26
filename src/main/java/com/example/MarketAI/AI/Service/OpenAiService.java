@@ -112,4 +112,6 @@ public class OpenAiService {
 
         return listOutputParser.parse(response.getResult().getOutput().getContent());
     }
+
+
 }

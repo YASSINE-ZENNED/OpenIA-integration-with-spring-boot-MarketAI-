@@ -29,6 +29,13 @@ public class MessageController {
 
     }
 
+//    @GetMapping("/last10")
+//    public List<String> getLast10Messages(@RequestParam("id") Long id) {
+//
+//        return messageService.getLast10Messages(id);
+//
+//    }
+
     @PostMapping("/")
     public void sendMessage(@RequestBody MessageDTO message) {
 

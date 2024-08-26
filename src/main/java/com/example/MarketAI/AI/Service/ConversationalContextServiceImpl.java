@@ -4,6 +4,7 @@ import com.example.MarketAI.AI.Models.Conversation;
 import com.example.MarketAI.AI.Models.ConversationRepository;
 import com.example.MarketAI.AI.Models.Message;
 import com.example.MarketAI.AI.Models.MessageDTO;
+import com.example.MarketAI.AI.PromptConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,6 +87,13 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
 
             messageService.saveMessage(message1);
+
+//            MessageService.getLast10Messages(conversation.getId());
+
+            StringBuilder prompt = new StringBuilder();
+
+            prompt.append(PromptConstants.PROMPT_WHAT_WERE_WE_TALKING_ABOUT);
+
             return "Continue the conversation Message ADDED";
         }
 
