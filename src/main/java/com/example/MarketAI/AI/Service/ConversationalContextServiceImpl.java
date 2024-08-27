@@ -1,10 +1,10 @@
 package com.example.MarketAI.AI.Service;
 
+import com.example.MarketAI.AI.Config.PromptConstants;
 import com.example.MarketAI.AI.Models.Conversation;
 import com.example.MarketAI.AI.Models.ConversationRepository;
 import com.example.MarketAI.AI.Models.Message;
 import com.example.MarketAI.AI.Models.MessageDTO;
-import com.example.MarketAI.AI.PromptConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +23,9 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
     @Autowired
     private MessageService messageService;
+
+    @Autowired
+    OpenAiService openAiService;
 
     public Optional<Conversation> getConversation(Long contextId) {
 
@@ -70,7 +73,10 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             message1.setSender(USER);
 
             messageService.saveMessage(message1);
-            return "Start a new conversation";
+
+            String Responce = openAiService.SupportChatWithImage(messageDTO.getContent(), null);
+
+            return Responce;
 
         } else {
             Conversation conversation = conversationRepository.findById(messageDTO.getConversationID()).orElseThrow(() -> new RuntimeException("conversation not found"));
@@ -88,13 +94,26 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
             messageService.saveMessage(message1);
 
-//            MessageService.getLast10Messages(conversation.getId());
+            List<String> MessageHistory = messageService.getLast10Messages(conversation.getId());
 
             StringBuilder prompt = new StringBuilder();
 
+
             prompt.append(PromptConstants.PROMPT_WHAT_WERE_WE_TALKING_ABOUT);
 
-            return "Continue the conversation Message ADDED";
+            for (String message : MessageHistory) {
+                prompt.append(PromptConstants.PROMPT_DELIMITER + message + PromptConstants.PROMPT_DELIMITER);
+            }
+            prompt.append(PromptConstants.PROMPT_DELIMITER_FOR_HISTORICAL_CONTEXT);
+            prompt.append(PromptConstants.PROMPT_USE_CONTEXT_IF_NEEDED);
+            prompt.append(PromptConstants.PROMPT_THE_CURRENT_QUESTION);
+            prompt.append(message1.getContent());
+
+
+            String Responce = openAiService.SupportChatWithImage(String.valueOf(prompt), null);
+
+
+            return Responce;
         }
 
 

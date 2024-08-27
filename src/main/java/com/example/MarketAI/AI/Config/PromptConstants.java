@@ -1,9 +1,9 @@
-package com.example.MarketAI.AI;
+package com.example.MarketAI.AI.Config;
 
 
 public class PromptConstants {
-    public static final String PROMPT_DELIMITER = " <PR0MPTDEL1M1T3R> ";
-    public static final String PROMPT_WHAT_WERE_WE_TALKING_ABOUT = "We have been talking about these things as of now. ";
+    public static final String PROMPT_DELIMITER = " <||> ";
+    public static final String PROMPT_WHAT_WERE_WE_TALKING_ABOUT = "We have been talking about these things as of now. these the last messages we have exchanged :";
     public static final String PROMPT_DELIMITER_FOR_HISTORICAL_CONTEXT = "Please note that the previous queries are delimited " +
             "by the string" + PROMPT_DELIMITER;
     public static final String PROMPT_USE_CONTEXT_IF_NEEDED = "Make use of the contextual information about things discussed " +

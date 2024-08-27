@@ -62,9 +62,11 @@ public class OpenAiService {
         if (fileContent == null) {
 
             UserMessage userMessage = new UserMessage(prompt);
+
             var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
 
             return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
+
 
 //            return response.getResult().getOutput().getContent();
         } else {
