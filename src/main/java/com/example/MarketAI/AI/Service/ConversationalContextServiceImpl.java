@@ -27,6 +27,7 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
     @Autowired
     OpenAiService openAiService;
 
+
     public Optional<Conversation> getConversation(Long contextId) {
 
         return conversationRepository.findById(contextId);

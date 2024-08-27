@@ -10,30 +10,54 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.document.Document;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
 import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.parser.BeanOutputParser;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OpenAiService {
     @Autowired
     private OpenAiImageModel openAiImageModel;
 
+
+    private final VectorStore vectorStore;
     private final ChatModel chatModel;
     private final ChatClient chatClient;
 
-    public OpenAiService(ChatModel chatModel, ChatClient.Builder chatClient) {
+    @Value("classpath:/Docs/RagPrompt.st")
+    private Resource ragPromtTemplate;
+
+    public OpenAiService(VectorStore vectorStore, ChatModel chatModel, ChatClient.Builder chatClient) {
+
+        this.vectorStore = vectorStore;
         this.chatModel = chatModel;
         this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
 
     }
+
+//    private final ChatModel chatModel;
+//    private final ChatClient chatClient;
+//
+//    public OpenAiService(ChatModel chatModel, ChatClient.Builder chatClient) {
+//        this.chatModel = chatModel;
+//        this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
+//
+//    }
 
 
     public String GenerateImage(String prompt) {
@@ -57,15 +81,34 @@ public class OpenAiService {
                 "and give them this email to contact us :  Example@gmail.com  and pohne number : 1234567890"
 
         );
-
+        System.out.println("prompt = " + prompt);
 
         if (fileContent == null) {
 
-            UserMessage userMessage = new UserMessage(prompt);
+            List<Document> similarDocs = vectorStore.similaritySearch(SearchRequest.query(prompt).withTopK(1));
 
-            var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+            List<String> contentList = similarDocs.stream().map(Document::getContent).toList();
 
-            return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
+            PromptTemplate promptTemplate = new PromptTemplate(ragPromtTemplate);
+
+            Map<String, Object> promptParams = new HashMap<>();
+
+            promptParams.put("input", prompt);
+
+            promptParams.put("images", null);
+            promptParams.put("documents", String.join("\n", contentList));
+
+            Prompt Ragedprompt = promptTemplate.create(promptParams);
+            System.out.println("________________________________");
+            System.out.println("Ragedprompt = " + Ragedprompt);
+            System.out.println("________________________________");
+            return chatClient.call(Ragedprompt).getResult().getOutput().getContent();
+
+//            UserMessage userMessage = new UserMessage(prompt);
+//
+//            var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+//
+//            return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
 
 
 //            return response.getResult().getOutput().getContent();
