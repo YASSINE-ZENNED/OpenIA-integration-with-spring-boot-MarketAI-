@@ -11,20 +11,19 @@ import org.springframework.web.client.RestTemplate;
 public class OpenAIconfig {
 
 
-        // Load environment variables from .env file
-        @Value("${spring.ai.openai.api-key}")
-        private String secretKey ;
+    // Load environment variables from .env file
+    @Value("${spring.ai.openai.api-key}")
+    private String secretKey;
 
-        @Bean
-        public RestTemplate restTemplate() {
+    @Bean
+    public RestTemplate restTemplate() {
 
-            RestTemplate  restTemplate= new RestTemplate();
-            restTemplate.getInterceptors().add((request, body, execution) -> {
-                request.getHeaders().add("Authorization","Bearer "+secretKey );
-                return execution.execute(request, body);
-
-            });
-            return restTemplate;
-        }
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getInterceptors().add((request, body, execution) -> {
+            request.getHeaders().add("Authorization", "Bearer " + secretKey);
+            return execution.execute(request, body);
+        });
+        return restTemplate;
     }
+}
 

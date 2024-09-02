@@ -8,5 +8,4 @@ public interface ConversationalContextService {
     List<Long> getConversationalContextsIds();
 
     String preparePromptConversationalContext(MessageDTO messageDTO);
-
 }

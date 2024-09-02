@@ -11,20 +11,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AWSConfig {
 
+    private static final String AWS_SECRET_KEY = "AWS_SECRET_KEY";
+    private static final String AWS_ACCESS_KEY = "AWS_SECRET_KEY";
+    private static final String AWS_REGION = "AWS_SECRET_KEY";
+
     Dotenv dotenv = Dotenv.load();
 
-    // Access the variables
-    String secretKey = dotenv.get("AWS_SECRET_KEY");
-    String accessKey = dotenv.get("AWS_ACCESS_KEY");
-    String region = dotenv.get("AWS_REGION");
+    // Fetch the variables
+    String secretKey = dotenv.get(AWS_SECRET_KEY);
+    String accessKey = dotenv.get(AWS_ACCESS_KEY);
+    String region = dotenv.get(AWS_REGION);
 
     @Bean
     public AmazonS3 amazonS3() {
 
-        BasicAWSCredentials credentials = new BasicAWSCredentials(accessKey, secretKey);
         return AmazonS3Client.builder()
                 .withRegion(region)
-                .withCredentials(new AWSStaticCredentialsProvider(credentials))
+                .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(accessKey, secretKey)))
                 .build();
     }
 }

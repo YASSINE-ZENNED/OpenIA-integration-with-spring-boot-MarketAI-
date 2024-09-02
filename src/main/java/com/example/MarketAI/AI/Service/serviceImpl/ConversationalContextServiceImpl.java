@@ -1,10 +1,11 @@
-package com.example.MarketAI.AI.Service;
+package com.example.MarketAI.AI.Service.serviceImpl;
 
 import com.example.MarketAI.AI.Config.PromptConstants;
 import com.example.MarketAI.AI.Models.Conversation;
 import com.example.MarketAI.AI.Models.ConversationRepository;
 import com.example.MarketAI.AI.Models.Message;
 import com.example.MarketAI.AI.Models.MessageDTO;
+import com.example.MarketAI.AI.Service.ConversationalContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.MarketAI.AI.Models.Sender.BOT;
 import static com.example.MarketAI.AI.Models.Sender.USER;
 
 
@@ -29,20 +31,16 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
 
     public Optional<Conversation> getConversation(Long contextId) {
-
         return conversationRepository.findById(contextId);
     }
 
     @Override
     public List<Long> getConversationalContextsIds() {
-
         return conversationRepository.findAll().stream().map(Conversation::getId).toList();
     }
 
     @Override
     public String preparePromptConversationalContext(MessageDTO messageDTO) {
-
-
         if (messageDTO.getConversationID() == null) {
             System.out.println("messageDTO = " + messageDTO);
             return "Conversation ID is missing";
@@ -50,7 +48,7 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
         if (conversationRepository.findById(messageDTO.getConversationID()).isEmpty()) {
             System.out.println("_________________________");
-            System.out.println("we good inside");
+            System.out.println("We good inside");
             System.out.println("_________________________");
 
             Conversation conversation = new Conversation();
@@ -58,7 +56,6 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             conversation.setId((messageDTO.getConversationID()));
 
             LocalDate currentDate = LocalDate.now();
-
 
             conversation.setDateOfLastMessage(currentDate);
 
@@ -75,14 +72,20 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
 
             messageService.saveMessage(message1);
 
-            String Responce = openAiService.SupportChatWithImage(messageDTO.getContent(), null);
+            String Response = openAiService.SupportChatWithImage(messageDTO.getContent(), null);
 
-            return Responce;
+            Message Responsemessage = new Message();
+            Responsemessage.setConversation(conversation);
+
+            Responsemessage.setContent(Response);
+            Responsemessage.setTimestamp(System.currentTimeMillis());
+            Responsemessage.setSender(BOT);
+            
+            messageService.saveMessage(Responsemessage);
+            return Response;
 
         } else {
             Conversation conversation = conversationRepository.findById(messageDTO.getConversationID()).orElseThrow(() -> new RuntimeException("conversation not found"));
-            ;
-
 
             Message message1 = new Message();
             message1.setConversation(conversation);
@@ -92,13 +95,11 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             message1.setPhotos(messageDTO.getPhotos());
             message1.setSender(USER);
 
-
             messageService.saveMessage(message1);
 
             List<String> MessageHistory = messageService.getLast10Messages(conversation.getId());
 
             StringBuilder prompt = new StringBuilder();
-
 
             prompt.append(PromptConstants.PROMPT_WHAT_WERE_WE_TALKING_ABOUT);
 
@@ -110,13 +111,19 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             prompt.append(PromptConstants.PROMPT_THE_CURRENT_QUESTION);
             prompt.append(message1.getContent());
 
+            String Response = openAiService.SupportChatWithImage(String.valueOf(prompt), null);
 
-            String Responce = openAiService.SupportChatWithImage(String.valueOf(prompt), null);
+            Message Responsemessage = new Message();
+            Responsemessage.setConversation(conversation);
+
+            Responsemessage.setContent(Response);
+            Responsemessage.setTimestamp(System.currentTimeMillis());
+            Responsemessage.setSender(BOT);
+
+            messageService.saveMessage(Responsemessage);
 
 
-            return Responce;
+            return Response;
         }
-
-
     }
 }

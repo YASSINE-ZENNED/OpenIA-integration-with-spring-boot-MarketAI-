@@ -4,8 +4,8 @@ package com.example.MarketAI.AI.Controllers;
 import com.example.MarketAI.AI.Models.Conversation;
 import com.example.MarketAI.AI.Models.Message;
 import com.example.MarketAI.AI.Models.MessageDTO;
-import com.example.MarketAI.AI.Service.ConversationalContextServiceImpl;
-import com.example.MarketAI.AI.Service.MessageService;
+import com.example.MarketAI.AI.Service.serviceImpl.ConversationalContextServiceImpl;
+import com.example.MarketAI.AI.Service.serviceImpl.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,8 +38,6 @@ public class MessageController {
 
     @PostMapping("/")
     public void sendMessage(@RequestBody MessageDTO message) {
-
-
         Message message1 = new Message();
         message1.setContent(message.getContent());
         message1.setPhotos(message.getPhotos());
@@ -53,8 +51,6 @@ public class MessageController {
 
 
         messageService.saveMessage(message1);
-
-
     }
 
 }

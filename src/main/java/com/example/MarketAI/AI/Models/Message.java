@@ -20,7 +20,7 @@ public class Message {
     @Id
     @GeneratedValue
     private Long id;
-
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @ElementCollection
@@ -30,11 +30,8 @@ public class Message {
 
     private Long timestamp;
 
-
     @ManyToOne
     @JoinColumn(name = "conversationId", nullable = false)
     @JsonBackReference
     private Conversation conversation;
-
-
 }

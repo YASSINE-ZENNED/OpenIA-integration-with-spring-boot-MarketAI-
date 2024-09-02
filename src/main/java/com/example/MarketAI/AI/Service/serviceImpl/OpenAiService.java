@@ -1,4 +1,4 @@
-package com.example.MarketAI.AI.Service;
+package com.example.MarketAI.AI.Service.serviceImpl;
 
 
 import com.example.MarketAI.AI.Models.Item;
@@ -34,7 +34,6 @@ public class OpenAiService {
     @Autowired
     private OpenAiImageModel openAiImageModel;
 
-
     private final VectorStore vectorStore;
     private final ChatModel chatModel;
     private final ChatClient chatClient;
@@ -43,11 +42,9 @@ public class OpenAiService {
     private Resource ragPromtTemplate;
 
     public OpenAiService(VectorStore vectorStore, ChatModel chatModel, ChatClient.Builder chatClient) {
-
         this.vectorStore = vectorStore;
         this.chatModel = chatModel;
         this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
-
     }
 
 //    private final ChatModel chatModel;
@@ -59,7 +56,6 @@ public class OpenAiService {
 //
 //    }
 
-
     public String GenerateImage(String prompt) {
         ImageResponse response = openAiImageModel.call(
                 new ImagePrompt(prompt,
@@ -68,10 +64,8 @@ public class OpenAiService {
                                 .withN(1)
                                 .withHeight(1024)
                                 .withWidth(1024).build())
-
         );
         return response.toString();
-
     }
 
     public String SupportChatWithImage(String prompt, byte[] fileContent) {
@@ -132,16 +126,13 @@ public class OpenAiService {
                 + "here is the format i want you to use :" + listOutputParser.getFormat()
         );
 
-
         UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
 
         var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
 
         return listOutputParser.parse(response.getResult().getOutput().getContent());
-
     }
-
 
     public Item describeImageAsEnterprise(String keywords, byte[] fileContent) {
 
@@ -149,7 +140,6 @@ public class OpenAiService {
 
         SystemMessage systemMessage = new SystemMessage("Your primary function is to generate detailed and accurate descriptions of the main items in images provided by users for marketplace listings ." + "here is the format i want you to use :" + listOutputParser.getFormat());
 
-
         UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
 
@@ -157,6 +147,4 @@ public class OpenAiService {
 
         return listOutputParser.parse(response.getResult().getOutput().getContent());
     }
-
-
 }

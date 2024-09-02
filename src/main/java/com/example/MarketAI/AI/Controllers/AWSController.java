@@ -1,6 +1,6 @@
 package com.example.MarketAI.AI.Controllers;
 
-import com.example.MarketAI.AI.Service.S3FileUploadService;
+import com.example.MarketAI.AI.Service.serviceImpl.S3FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
