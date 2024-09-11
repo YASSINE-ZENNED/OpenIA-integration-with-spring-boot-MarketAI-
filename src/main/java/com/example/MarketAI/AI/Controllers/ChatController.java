@@ -1,6 +1,7 @@
 package com.example.MarketAI.AI.Controllers;
 
 import com.example.MarketAI.AI.Models.Item;
+import com.example.MarketAI.AI.Models.SearchRequestForAI;
 import com.example.MarketAI.AI.Service.serviceImpl.OpenAiService;
 import groovy.util.logging.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
@@ -16,10 +17,15 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -48,6 +54,24 @@ public class ChatController {
         this.vectorStore = vectorStore;
         this.chatModel = chatModel;
         this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
+    }
+
+    @PostMapping("/test")
+    public String test() {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://api.tavily.com/search";
+        String query = "Who is Leo Messi?";
+        SearchRequestForAI searchRequest = new SearchRequestForAI(query);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<SearchRequestForAI> entity = new HttpEntity<>(searchRequest, headers);
+
+        ResponseEntity<String> response = restTemplate.postForEntity(
+                "https://api.tavily.com/search", entity, String.class);
+
+        // Handle the response
+        return response.getBody();
+        
     }
 
     @GetMapping("/chat")

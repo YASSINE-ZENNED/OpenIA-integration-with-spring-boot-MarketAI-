@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 public class AWSConfig {
 
     private static final String AWS_SECRET_KEY = "AWS_SECRET_KEY";
-    private static final String AWS_ACCESS_KEY = "AWS_SECRET_KEY";
-    private static final String AWS_REGION = "AWS_SECRET_KEY";
+    private static final String AWS_ACCESS_KEY = "AWS_ACCESS_KEY";
+    private static final String AWS_REGION = "AWS_REGION";
 
     Dotenv dotenv = Dotenv.load();
 
