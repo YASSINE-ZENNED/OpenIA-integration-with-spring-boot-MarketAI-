@@ -14,6 +14,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.image.ImagePrompt;
 import org.springframework.ai.image.ImageResponse;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiImageModel;
 import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.parser.BeanOutputParser;
@@ -121,7 +122,8 @@ public class OpenAiService {
     public Item describeImageAsUser(String keywords, byte[] fileContent) {
         var listOutputParser = new BeanOutputParser<>(Item.class);
 
-        SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company?" +
+        SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company? i want you to search for prices and get a close estimate for the suitable  price  " +
+
                 "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features if you cant tell the item tell to upload better photos of the product or if the item is not ok to sell just say sorry cant help you with this item dont use any name brand  for thr discription use 100 words."
                 + "here is the format i want you to use :" + listOutputParser.getFormat()
         );
@@ -129,7 +131,7 @@ public class OpenAiService {
         UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
                 List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
 
-        var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
+        var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage), OpenAiChatOptions.builder().withFunction("getPrices").build()));
 
         return listOutputParser.parse(response.getResult().getOutput().getContent());
     }
