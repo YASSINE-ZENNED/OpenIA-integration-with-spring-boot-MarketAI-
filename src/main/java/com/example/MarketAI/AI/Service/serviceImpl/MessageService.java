@@ -1,6 +1,5 @@
 package com.example.MarketAI.AI.Service.serviceImpl;
 
-
 import com.example.MarketAI.AI.Models.Message;
 import com.example.MarketAI.AI.Models.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;

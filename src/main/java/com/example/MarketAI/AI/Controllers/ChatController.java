@@ -50,7 +50,7 @@ public class ChatController {
         this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
     }
 
-//    @PostMapping("/test")
+    //    @PostMapping("/test")
 //    public Object test() {
 //
 //        RestTemplate restTemplate = new RestTemplate();
@@ -65,7 +65,6 @@ public class ChatController {
 //        return response.getBody();
 //
 //    }
-
     @GetMapping("/chat")
     public String chat(@RequestParam(value = "prompt", defaultValue = "tell me a joke ") String prompt) {
 

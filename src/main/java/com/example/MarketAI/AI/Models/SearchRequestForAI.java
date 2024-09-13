@@ -12,7 +12,8 @@ public class SearchRequestForAI {
 
     @JsonIgnore
     Dotenv dotenv = Dotenv.load();
-    
+
+
     private String api_key;
 
     private String query;

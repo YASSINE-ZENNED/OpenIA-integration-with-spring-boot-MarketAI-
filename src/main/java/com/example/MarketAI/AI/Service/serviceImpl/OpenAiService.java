@@ -133,7 +133,13 @@ public class OpenAiService {
 
         var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage), OpenAiChatOptions.builder().withFunction("getPrices").build()));
 
-        return listOutputParser.parse(response.getResult().getOutput().getContent());
+//        System.out.println("response.getResult().getOutput().getContent() = ||" + response.getResult().getOutput().getContent());
+        String str = response.getResult().getOutput().getContent().substring(8, response.getResult().getOutput().getContent().length() - 3);
+//        System.out.println("str = " + str);
+//        System.out.println("response = " + response);
+
+        return listOutputParser.parse(str);
+
     }
 
     public Item describeImageAsEnterprise(String keywords, byte[] fileContent) {

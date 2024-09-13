@@ -28,28 +28,26 @@ public class Functions {
         return (request) -> {
 
             RestTemplate restTemplate = new RestTemplate();
+            System.out.println("request = " + request);
             String query = String.format(
                     "give me the average price of %s based on the status %s and brand %s",
                     request.itemName(), request.itemStatus(), request.itemBrand()
             );
             SearchRequestForAI searchRequestForAI = new SearchRequestForAI(query);
             // Set the headers
-            System.out.println("searchRequestForAI.getApi_key() = " + searchRequestForAI.getApi_key());
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             // Create an HTTP entity with the request and headers
             HttpEntity<SearchRequestForAI> entity = new HttpEntity<>(searchRequestForAI, headers);
 
-            System.out.println("we make it here ");
+
             // Execute the POST request
             ResponseEntity<String> response = restTemplate.postForEntity(
                     "https://api.tavily.com/search", entity, String.class
             );
             // Process the response
             String responseBody = response.getBody();
-            System.out.println("___________________________________");
-            System.out.println(responseBody);
-            System.out.println("___________________________________");
+
 
             // Assuming responseBody contains prices in some list format, parse it
             // In this case, you can parse JSON to extract prices
