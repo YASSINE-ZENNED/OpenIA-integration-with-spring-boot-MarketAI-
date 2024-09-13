@@ -34,10 +34,13 @@ public class Functions {
             );
             SearchRequestForAI searchRequestForAI = new SearchRequestForAI(query);
             // Set the headers
+            System.out.println("searchRequestForAI.getApi_key() = " + searchRequestForAI.getApi_key());
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             // Create an HTTP entity with the request and headers
             HttpEntity<SearchRequestForAI> entity = new HttpEntity<>(searchRequestForAI, headers);
+
+            System.out.println("we make it here ");
             // Execute the POST request
             ResponseEntity<String> response = restTemplate.postForEntity(
                     "https://api.tavily.com/search", entity, String.class

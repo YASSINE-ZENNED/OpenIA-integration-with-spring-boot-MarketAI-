@@ -1,3 +1,6 @@
+tavily:
+  secret-key:
+    apikey: ${TavilyKey}
 spring:
   application:
     name: OpenAI
@@ -7,8 +10,7 @@ spring:
       chat:
         options:
           model: gpt-4o
-  tavily:
-    api-key: ${TavilyKey}
+
   datasource:
     password: root
     url: jdbc:postgresql://localhost:5432/MarketAIChat

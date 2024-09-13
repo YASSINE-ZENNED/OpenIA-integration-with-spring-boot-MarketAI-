@@ -1,27 +1,27 @@
 package com.example.MarketAI.AI.Models;
 
-import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.github.cdimascio.dotenv.Dotenv;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
 
+@Data
+@AllArgsConstructor
 public class SearchRequestForAI {
 
-//    Dotenv dotenv = Dotenv.load();
-//
-//    // Access the variables
-//    String secretKey = dotenv.get("TAVILY_API_KEY");
-
-
-    @Value("${spring.tavily.api-key}")
+    @JsonIgnore
+    Dotenv dotenv = Dotenv.load();
+    
     private String api_key;
 
-    @Setter
     private String query;
 
     // Constructor only takes query as argument
     public SearchRequestForAI(String query) {
+
         this.query = query;
-        this.api_key = api_key;
+        this.api_key = dotenv.get("TAVILY_API_KEY");
 
     }
 
