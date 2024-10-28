@@ -25,6 +25,12 @@ public class Functions {
     @Description("Get the average price of this item based on the status and brand")
     public Function<Request, List<String>> getPrices() {
 
+        System.out.println("its fucked in here ********************************************");
+        System.out.println("its fucked in here ********************************************");
+        System.out.println("its fucked in here ********************************************");
+        System.out.println("its fucked in here ********************************************");
+        System.out.println("its fucked in here ********************************************");
+
         return (request) -> {
 
             RestTemplate restTemplate = new RestTemplate();
@@ -47,7 +53,7 @@ public class Functions {
             );
             // Process the response
             String responseBody = response.getBody();
-
+            System.out.println("responseBody = " + responseBody);
 
             // Assuming responseBody contains prices in some list format, parse it
             // In this case, you can parse JSON to extract prices

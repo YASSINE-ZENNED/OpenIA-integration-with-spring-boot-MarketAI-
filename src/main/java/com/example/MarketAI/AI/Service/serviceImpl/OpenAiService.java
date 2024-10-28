@@ -48,14 +48,6 @@ public class OpenAiService {
         this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
     }
 
-//    private final ChatModel chatModel;
-//    private final ChatClient chatClient;
-//
-//    public OpenAiService(ChatModel chatModel, ChatClient.Builder chatClient) {
-//        this.chatModel = chatModel;
-//        this.chatClient = chatClient.defaultAdvisors(new MessageChatMemoryAdvisor(new InMemoryChatMemory())).build();
-//
-//    }
 
     public String GenerateImage(String prompt) {
         ImageResponse response = openAiImageModel.call(
@@ -91,22 +83,19 @@ public class OpenAiService {
             promptParams.put("input", prompt);
 
             promptParams.put("images", null);
+
             promptParams.put("documents", String.join("\n", contentList));
 
             Prompt Ragedprompt = promptTemplate.create(promptParams);
+
             System.out.println("________________________________");
+
             System.out.println("Ragedprompt = " + Ragedprompt);
+
             System.out.println("________________________________");
+
             return chatClient.call(Ragedprompt).getResult().getOutput().getContent();
 
-//            UserMessage userMessage = new UserMessage(prompt);
-//
-//            var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
-//
-//            return chatClient.prompt(new Prompt(List.of(systemMessage, userMessage))).call().content();
-
-
-//            return response.getResult().getOutput().getContent();
         } else {
 
             UserMessage userMessage = new UserMessage(prompt,
@@ -120,22 +109,31 @@ public class OpenAiService {
     }
 
     public Item describeImageAsUser(String keywords, byte[] fileContent) {
-        var listOutputParser = new BeanOutputParser<>(Item.class);
 
-        SystemMessage systemMessage = new SystemMessage("I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company? i want you to search for prices and get a close estimate for the suitable  price  " +
+
+        var listOutputParser = new BeanOutputParser<>(Item.class);
+        SystemMessage systemMessage = new SystemMessage("only foucs on the main item in the photo ,I'd like to generate descriptions for items I'm selling on a second-hand marketplace. The items can be either new or used.  Can you create a template that sounds like a real person wrote it, not a big company? i want you to search for prices and get a close estimate for the suitable  price  " +
 
                 "I want the descriptions to be clear and honest about the item's condition add 3 bullet points of key features if you cant tell the item tell to upload better photos of the product or if the item is not ok to sell just say sorry cant help you with this item dont use any name brand  for thr discription use 100 words."
                 + "here is the format i want you to use :" + listOutputParser.getFormat()
         );
 
-        UserMessage userMessage = new UserMessage(" use these words { " + keywords + " }",
-                List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
+        UserMessage userMessage = new UserMessage(" if possible use these words { " + keywords + " }", List.of(new Media(MimeTypeUtils.IMAGE_JPEG, fileContent)));
 
         var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage), OpenAiChatOptions.builder().withFunction("getPrices").build()));
 
+
+        System.out.println("response = " + response.getResult().getOutput().getContent());
+
+////          this code is not implimented yet i need to fix it
+//        if (responseBody.startsWith("'''") && responseBody.endsWith("'''")) {
+//            responseBody = responseBody.substring(3, responseBody.length() - 3);
+//        }
+
+
 //        System.out.println("response.getResult().getOutput().getContent() = ||" + response.getResult().getOutput().getContent());
         String str = response.getResult().getOutput().getContent().substring(8, response.getResult().getOutput().getContent().length() - 3);
-//        System.out.println("str = " + str);
+        System.out.println("str = " + str);
 //        System.out.println("response = " + response);
 
         return listOutputParser.parse(str);
@@ -154,5 +152,7 @@ public class OpenAiService {
         var response = chatClient.call(new Prompt(List.of(systemMessage, userMessage)));
 
         return listOutputParser.parse(response.getResult().getOutput().getContent());
+
     }
+
 }

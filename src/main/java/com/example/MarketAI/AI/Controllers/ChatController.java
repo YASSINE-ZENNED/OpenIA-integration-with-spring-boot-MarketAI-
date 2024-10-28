@@ -16,10 +16,7 @@ import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -110,6 +107,7 @@ public class ChatController {
         return openAiService.SupportChatWithImage(keywords, fileContent);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/DescribeForClient")
     public Item describeImageCP(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords") String keywords) throws IOException {
 
@@ -117,6 +115,7 @@ public class ChatController {
         return openAiService.describeImageAsUser(keywords, fileContent);
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/DescribeForEnterprise")
     public Item describeImageE(@RequestParam("image") MultipartFile imageFile, @RequestParam("keywords") String keywords) throws IOException {
         byte[] fileContent = imageFile.getBytes();
