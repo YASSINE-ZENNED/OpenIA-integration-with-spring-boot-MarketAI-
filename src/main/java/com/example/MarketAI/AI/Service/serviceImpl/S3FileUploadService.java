@@ -22,9 +22,11 @@ public class S3FileUploadService implements IS3FileUploadService {
     final Dotenv dotenv = Dotenv.load();
     final String bucketName = dotenv.get(AWS_BUCKET_NAME);
 
-    public void uploadFile(String key, MultipartFile file) throws IOException {
+    public String uploadFile(String key, MultipartFile file) throws IOException {
         PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, key, file.getInputStream(), null);
         amazonS3.putObject(putObjectRequest);
+        String fileUrl = amazonS3.getUrl(bucketName, key).toString();
+        return fileUrl;
     }
 
     public Resource getAwsFile(String objectKey) throws IOException {

@@ -47,6 +47,7 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
         }
 
         if (conversationRepository.findById(messageDTO.getConversationID()).isEmpty()) {
+
             System.out.println("_________________________");
             System.out.println("We good inside");
             System.out.println("_________________________");
@@ -80,7 +81,7 @@ public class ConversationalContextServiceImpl implements ConversationalContextSe
             Responsemessage.setContent(Response);
             Responsemessage.setTimestamp(System.currentTimeMillis());
             Responsemessage.setSender(BOT);
-            
+
             messageService.saveMessage(Responsemessage);
             return Response;
 

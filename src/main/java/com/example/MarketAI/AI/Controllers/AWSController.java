@@ -19,11 +19,11 @@ public class AWSController {
     @Autowired
     private S3FileUploadService fileUploadService;
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            fileUploadService.uploadFile(file.getOriginalFilename(), file);
-            return "File uploaded successfully!";
+            return fileUploadService.uploadFile(file.getOriginalFilename(), file);
         } catch (IOException e) {
             return "Error uploading file: " + e.getMessage();
         }
